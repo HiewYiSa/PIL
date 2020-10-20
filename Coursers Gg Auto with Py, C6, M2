@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+import os, requests, json
+
+feedbacks = ["/data/feedback/"+feedback for feedback in os.listdir("/data/feedback")]
+
+for feedback in feedbacks:
+        with open(feedback) as file:
+                filelines = [lines.strip() for lines in file.readlines()]
+#               feedback_dict = dict(zip(["title", "name", "date", "feedback"], filelines))
+                feedback_dict = {"title": filelines[0], "name": filelines[1], "date": filelines[2], "feedback": filelines[3:]}
+                response = requests.post("http://34.72.10.64/feedback/", data = feedback_dict)
+#               print(feedback_dict)
+#               feedback_json = json.dumps(feedback)
+#               response = requests.post("http://34.72.10.64/feedback", json = feedback_json)
+                if response.status_code != 201:
+                        raise Exception('POST error status={}'.format(response.status_code))
+                print('Created feedback ID: {}'.format(response.json()["id"]))
+                print(response.request.url)
+                print(response.request.body)
+                print(response.ok)
+                print(response.status_code)
+#               print(response.raise_for_status())
+
+#COMMENTS
+
+#URL has to be ended with "/". EG.:"http://34.72.10.64/feedback/"
+
+# Bash testing commands: 
+# for fb in $(ls /data/feedback); do cat /data/feedback/$fb; done
